@@ -14,16 +14,18 @@ func getInput(prompt string, r *bufio.Reader) (string, error) {
 	return strings.TrimSpace(input), err
 }
 
-func getTrack() track {
+func getTrack() (track, artist) {
 	reader := bufio.NewReader(os.Stdin)
 
 	id, _ := getInput("Input the id of the song you'd like information on: ", reader)
 
 	sp := getById(id)
-	t := createObject(sp)
-	fmt.Println("The name of this song is: ", t.name, "the popularity of the song is: ", t.popularity)
+	t := createTrackObject(sp)
+	spa := getByTrackId(id)
+	a := createArtistObject(spa)
+	fmt.Println("The name of this song is: ", t.name, "the popularity of the song is: ", t.popularity, "The name of the artist is: ", a.name, "The popularity of the artist is: ", a.popularity)
 
-	return t
+	return t, a
 }
 
 func main() {
