@@ -14,7 +14,7 @@ type artist struct {
 	popularity int
 }
 
-func getByTrackId(id string) *spotify.FullArtist {
+func getByTrackId(id string) artist {
 
 	authConfig := &clientcredentials.Config{
 		ClientID:     "4779b9533e004287b6536fd8c5325adf",
@@ -36,16 +36,18 @@ func getByTrackId(id string) *spotify.FullArtist {
 	}
 
 	artistID := track.Artists[0].ID
-	// Get artist information
 	artist, err := client.GetArtist(artistID)
 	if err != nil {
-		log.Fatalf("error retrieving track data: %v", err)
+		log.Fatalf("error retrieving artist data: %v", err)
 	}
 
-	return artist
+	a := createArtistObject(artist)
+
+	return a
 }
 
 func createArtistObject(spotifyArtist *spotify.FullArtist) artist {
+
 	a := artist{
 		name:       spotifyArtist.Name,
 		id:         string(spotifyArtist.ID),

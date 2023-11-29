@@ -8,13 +8,13 @@ import (
 	"golang.org/x/oauth2/clientcredentials"
 )
 
-type track struct {
+type relatedartist struct {
 	id         string
 	name       string
 	popularity int
 }
 
-func getById(id string) track {
+func getByArtistId(id string) []relatedartist {
 
 	authConfig := &clientcredentials.Config{
 		ClientID:     "4779b9533e004287b6536fd8c5325adf",
@@ -29,23 +29,28 @@ func getById(id string) track {
 
 	client := spotify.Authenticator{}.NewClient(accessToken)
 
-	trackID := spotify.ID(id)
-	track, err := client.GetTrack(trackID)
+	relatedArtists, err := client.GetRelatedArtists(spotify.ID(id))
 	if err != nil {
-		log.Fatalf("error retrieving track data: %v", err)
+		log.Fatalf("error retrieving related artist data: %v", err)
 	}
 
-	t := createTrackObject(track)
+	artists := []relatedartist{}
 
-	return t
+	for _, a := range relatedArtists {
+
+		artists = append(artists, createRelatedArtistObject(a))
+	}
+
+	return artists
 }
 
-func createTrackObject(spotifyTrack *spotify.FullTrack) track {
-	t := track{
-		name:       spotifyTrack.Name,
-		id:         string(spotifyTrack.ID),
-		popularity: spotifyTrack.Popularity,
+func createRelatedArtistObject(spotifyArtist spotify.FullArtist) relatedartist {
+
+	a := relatedartist{
+		name:       spotifyArtist.Name,
+		id:         string(spotifyArtist.ID),
+		popularity: spotifyArtist.Popularity,
 	}
 
-	return t
+	return a
 }
