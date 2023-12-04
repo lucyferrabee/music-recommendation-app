@@ -12,6 +12,7 @@ type relatedartist struct {
 	id         string
 	name       string
 	popularity int
+	topTracks  []spotify.FullTrack
 }
 
 func getByArtistId(id string) []relatedartist {
@@ -38,18 +39,24 @@ func getByArtistId(id string) []relatedartist {
 
 	for _, a := range relatedArtists {
 
-		artists = append(artists, createRelatedArtistObject(a))
+		artists = append(artists, createRelatedArtistObject(a, client))
 	}
 
 	return artists
 }
 
-func createRelatedArtistObject(spotifyArtist spotify.FullArtist) relatedartist {
+func createRelatedArtistObject(spotifyArtist spotify.FullArtist, client spotify.Client) relatedartist {
+
+	topTracks, err := client.GetArtistsTopTracks(spotifyArtist.ID, "US")
+	if err != nil {
+		log.Fatalf("error retrieving top tracks data: %v", err)
+	}
 
 	a := relatedartist{
 		name:       spotifyArtist.Name,
 		id:         string(spotifyArtist.ID),
 		popularity: spotifyArtist.Popularity,
+		topTracks:  topTracks,
 	}
 
 	return a

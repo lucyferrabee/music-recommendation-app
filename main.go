@@ -27,6 +27,8 @@ func getTrackAndArtist() (track, artist, []relatedartist) {
 		"The name of the artist is: ", artist.name,
 		"The popularity of the artist is: ", artist.popularity,
 		"The first related artist is: ", relatedArtists[0].name,
+		"The second related artist is: ", relatedArtists[1].name,
+		"The top tracks of the first artist is: ", relatedArtists[0].topTracks,
 	)
 
 	return track, artist, relatedArtists
