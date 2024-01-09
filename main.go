@@ -14,27 +14,25 @@ func getInput(prompt string, r *bufio.Reader) (string, error) {
 	return strings.TrimSpace(input), err
 }
 
-func getTrackAndArtist() (track, artist, []relatedartist) {
+func generatePlaylist() (track, artist, []relatedartist) {
 	reader := bufio.NewReader(os.Stdin)
 
-	id, _ := getInput("Input the id of the song you'd like information on: ", reader)
+	id, _ := getInput("Input the id of the song and we'll generate a playlist for you: ", reader)
 
 	track := getById(id)
 	artist := getByTrackId(id)
 	relatedArtists := getByArtistId(artist.id)
-	fmt.Println("The name of this song is: ", track.name,
-		"The popularity of the song is: ", track.popularity,
-		"The name of the artist is: ", artist.name,
-		"The popularity of the artist is: ", artist.popularity,
-		"The first related artist is: ", relatedArtists[0].name,
-		"The second related artist is: ", relatedArtists[1].name,
-		"The top tracks of the first artist is: ", relatedArtists[0].topTracks,
-	)
+
+	fmt.Println("Here's your playlist: ")
+
+	for _, relatedartist := range relatedArtists {
+		fmt.Println(relatedartist.topTracks[0], relatedartist.name)
+	}
 
 	return track, artist, relatedArtists
 }
 
 func main() {
 
-	getTrackAndArtist()
+	generatePlaylist()
 }
