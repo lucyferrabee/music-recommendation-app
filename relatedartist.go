@@ -52,12 +52,10 @@ func createRelatedArtistObject(spotifyArtist spotify.FullArtist, client spotify.
 		log.Fatalf("error retrieving top tracks data: %v", err)
 	}
 
-	a := relatedartist{
+	return relatedartist{
 		name:       spotifyArtist.Name,
 		id:         string(spotifyArtist.ID),
 		popularity: spotifyArtist.Popularity,
 		topTracks:  topTracks,
 	}
-
-	return a
 }
