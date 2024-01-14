@@ -2,8 +2,9 @@
 
 to run the program, run these command in the terminal:
 
-```$ go build```
+```$ go mod download```
 
+```$ go build```
 
 ```$ ./lucy.ferrabee.co.uk```
 
