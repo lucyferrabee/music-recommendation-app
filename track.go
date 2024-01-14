@@ -41,11 +41,10 @@ func getById(id string) track {
 }
 
 func createTrackObject(spotifyTrack *spotify.FullTrack) track {
-	t := track{
+
+	return track{
 		name:       spotifyTrack.Name,
 		id:         string(spotifyTrack.ID),
 		popularity: spotifyTrack.Popularity,
 	}
-
-	return t
 }

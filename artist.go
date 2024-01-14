@@ -41,18 +41,14 @@ func getByTrackId(id string) artist {
 		log.Fatalf("error retrieving artist data: %v", err)
 	}
 
-	a := createArtistObject(artist)
-
-	return a
+	return createArtistObject(artist)
 }
 
 func createArtistObject(spotifyArtist *spotify.FullArtist) artist {
 
-	a := artist{
+	return artist{
 		name:       spotifyArtist.Name,
 		id:         string(spotifyArtist.ID),
 		popularity: spotifyArtist.Popularity,
 	}
-
-	return a
 }
