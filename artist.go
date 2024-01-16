@@ -36,15 +36,10 @@ func getByTrackId(id string) artist {
 	}
 
 	artistID := track.Artists[0].ID
-	artist, err := client.GetArtist(artistID)
+	spotifyArtist, err := client.GetArtist(artistID)
 	if err != nil {
 		log.Fatalf("error retrieving artist data: %v", err)
 	}
-
-	return createArtistObject(artist)
-}
-
-func createArtistObject(spotifyArtist *spotify.FullArtist) artist {
 
 	return artist{
 		name:       spotifyArtist.Name,

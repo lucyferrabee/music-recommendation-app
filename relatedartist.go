@@ -35,27 +35,22 @@ func getByArtistId(id string) []relatedartist {
 		log.Fatalf("error retrieving related artist data: %v", err)
 	}
 
-	artists := []relatedartist{}
+	artists := make([]relatedartist, len(relatedArtists))
 
-	for _, a := range relatedArtists {
+	for i, a := range relatedArtists {
+		topTracks, err := client.GetArtistsTopTracks(a.ID, "US")
+		if err != nil {
+			log.Fatalf("error retrieving top tracks data: %v", err)
+		}
 
-		artists = append(artists, createRelatedArtistObject(a, client))
+		// Use composite literal directly at the call site
+		artists[i] = relatedartist{
+			name:       a.Name,
+			id:         string(a.ID),
+			popularity: a.Popularity,
+			topTracks:  topTracks,
+		}
 	}
 
 	return artists
-}
-
-func createRelatedArtistObject(spotifyArtist spotify.FullArtist, client spotify.Client) relatedartist {
-
-	topTracks, err := client.GetArtistsTopTracks(spotifyArtist.ID, "US")
-	if err != nil {
-		log.Fatalf("error retrieving top tracks data: %v", err)
-	}
-
-	return relatedartist{
-		name:       spotifyArtist.Name,
-		id:         string(spotifyArtist.ID),
-		popularity: spotifyArtist.Popularity,
-		topTracks:  topTracks,
-	}
 }

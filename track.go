@@ -30,17 +30,10 @@ func getById(id string) track {
 	client := spotify.Authenticator{}.NewClient(accessToken)
 
 	trackID := spotify.ID(id)
-	track, err := client.GetTrack(trackID)
+	spotifyTrack, err := client.GetTrack(trackID)
 	if err != nil {
 		log.Fatalf("error retrieving track data: %v", err)
 	}
-
-	t := createTrackObject(track)
-
-	return t
-}
-
-func createTrackObject(spotifyTrack *spotify.FullTrack) track {
 
 	return track{
 		name:       spotifyTrack.Name,
