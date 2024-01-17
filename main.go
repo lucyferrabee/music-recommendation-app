@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 	"strings"
+
+	"lucy.ferrabee.co.uk/auth"
 )
 
 func getInput(prompt string, r *bufio.Reader) (string, error) {
@@ -26,8 +28,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	artist := getByTrackId(id)
-	relatedArtists := getByArtistId(artist.id)
+	auth := auth.NewAuthenticator("4779b9533e004287b6536fd8c5325adf", "8dbf0a481f8b4de0901fbc9661f6036c")
+
+	artistService := NewArtistService(auth)
+	relatedArtistService := NewRelatedArtistService(auth)
+
+	artist := artistService.getByTrackId(id)
+	relatedArtists := relatedArtistService.getByArtistId(artist.id)
 
 	fmt.Println("Here's your playlist: ")
 
