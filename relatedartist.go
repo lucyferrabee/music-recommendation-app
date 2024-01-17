@@ -43,7 +43,6 @@ func getByArtistId(id string) []relatedartist {
 			log.Fatalf("error retrieving top tracks data: %v", err)
 		}
 
-		// Use composite literal directly at the call site
 		artists[i] = relatedartist{
 			name:       a.Name,
 			id:         string(a.ID),
