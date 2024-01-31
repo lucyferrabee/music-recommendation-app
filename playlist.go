@@ -1,22 +1,58 @@
 package main
 
 import (
-	"fmt"
+	"sort"
 
 	"github.com/zmb3/spotify"
 )
 
-type playlist struct {
-	tracks []spotify.FullTrack
+type PlaylistService struct {
+	RelatedArtistService *RelatedArtistService
 }
 
-func displayPlaylist(p []spotify.FullTrack) string {
+func NewPlaylistService(relatedArtistService *RelatedArtistService) *PlaylistService {
+	return &PlaylistService{
+		RelatedArtistService: relatedArtistService,
+	}
+}
 
-	var playlist (string)
-
-	for _, pl := range p {
-		playlist += fmt.Sprintf("%s by %s (ID: %s)\n", pl.Name, pl.Artists[0].Name, pl.ID)
+func (ps *PlaylistService) GeneratePlaylist(trackID string, targetPopularity, threshold int) ([]spotify.FullTrack, error) {
+	artist := ps.RelatedArtistService.getByTrackId(trackID)
+	allTopTracks, err := ps.RelatedArtistService.getTopTracksFromRelatedArtists(artist.id, 1)
+	if err != nil {
+		return nil, err
 	}
 
-	return playlist
+	sort.Sort(byPopularity(allTopTracks))
+
+	similarTracks := ps.chooseSimilarPopularity(allTopTracks, targetPopularity, threshold)
+	uniqueTracks := ps.removeDuplicates(similarTracks)
+
+	return uniqueTracks, nil
+}
+
+func (ps *PlaylistService) chooseSimilarPopularity(tracks []spotify.FullTrack, targetPopularity, threshold int) []spotify.FullTrack {
+	var selectedTracks []spotify.FullTrack
+
+	for _, track := range tracks {
+		if abs(track.Popularity-targetPopularity) <= threshold {
+			selectedTracks = append(selectedTracks, track)
+		}
+	}
+
+	return selectedTracks
+}
+
+func (ps *PlaylistService) removeDuplicates(tracks []spotify.FullTrack) []spotify.FullTrack {
+	uniqueTrackIDs := make(map[spotify.ID]struct{})
+	var uniqueTracks []spotify.FullTrack
+
+	for _, track := range tracks {
+		if _, exists := uniqueTrackIDs[track.ID]; !exists {
+			uniqueTrackIDs[track.ID] = struct{}{}
+			uniqueTracks = append(uniqueTracks, track)
+		}
+	}
+
+	return uniqueTracks
 }

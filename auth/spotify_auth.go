@@ -1,5 +1,3 @@
-// auth/spotify_auth.go
-
 package auth
 
 import (

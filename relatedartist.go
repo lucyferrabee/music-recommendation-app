@@ -24,51 +24,21 @@ func NewRelatedArtistService(auth *auth.Authenticator) *RelatedArtistService {
 	}
 }
 
-// func (ras *RelatedArtistService) getByArtistId(id string) []relatedartist {
-// 	client := ras.Auth.Client
-
-// 	relatedArtists, err := client.GetRelatedArtists(spotify.ID(id))
-// 	if err != nil {
-// 		log.Fatalf("error retrieving related artist data: %v", err)
-// 	}
-
-// 	artists := make([]relatedartist, len(relatedArtists))
-
-// 	for i, a := range relatedArtists {
-// 		topTracks, err := client.GetArtistsTopTracks(a.ID, "US")
-// 		if err != nil {
-// 			log.Fatalf("error retrieving top tracks data: %v", err)
-// 		}
-
-// 		artists[i] = relatedartist{
-// 			name:       a.Name,
-// 			id:         string(a.ID),
-// 			popularity: a.Popularity,
-// 			topTracks:  topTracks,
-// 		}
-// 	}
-
-// 	return artists
-// }
-
 func (ras *RelatedArtistService) getTopTracksFromRelatedArtists(id string, depth int) ([]spotify.FullTrack, error) {
 	client := ras.Auth.Client
 
-	// Fetch top tracks from the original artist
 	topTracks, err := client.GetArtistsTopTracks(spotify.ID(id), "US")
 	if err != nil {
 		log.Fatalf("error retrieving top tracks data: %v", err)
 		return nil, err
 	}
 
-	// Fetch related artists
 	relatedArtists, err := client.GetRelatedArtists(spotify.ID(id))
 	if err != nil {
 		log.Fatalf("error retrieving related artist data: %v", err)
 		return nil, err
 	}
 
-	// Fetch top tracks from related artists
 	for _, artist := range relatedArtists {
 		artistTopTracks, err := client.GetArtistsTopTracks(artist.ID, "US")
 		if err != nil {
@@ -77,9 +47,7 @@ func (ras *RelatedArtistService) getTopTracksFromRelatedArtists(id string, depth
 		}
 		topTracks = append(topTracks, artistTopTracks...)
 
-		// Optionally, fetch top tracks from related artists' related artists recursively
 		if depth > 1 {
-			// Make a recursive call with reduced depth
 			relatedArtistTopTracks, err := ras.getTopTracksFromRelatedArtists(artist.ID.String(), depth-1)
 			if err != nil {
 				return nil, err
@@ -89,4 +57,33 @@ func (ras *RelatedArtistService) getTopTracksFromRelatedArtists(id string, depth
 	}
 
 	return topTracks, nil
+}
+
+func (ras *RelatedArtistService) getByTrackId(id string) relatedartist {
+	client := ras.Auth.Client
+
+	trackID := spotify.ID(id)
+
+	track, err := client.GetTrack(trackID)
+	if err != nil {
+		log.Fatalf("error retrieving track data: %v", err)
+	}
+
+	artistID := track.Artists[0].ID
+	artist, err := client.GetArtist(artistID)
+	if err != nil {
+		log.Fatalf("error retrieving artist data: %v", err)
+	}
+
+	topTracks, err := client.GetArtistsTopTracks(artistID, "US")
+	if err != nil {
+		log.Fatalf("error retrieving top tracks data: %v", err)
+	}
+
+	return relatedartist{
+		name:       artist.Name,
+		id:         string(artist.ID),
+		popularity: artist.Popularity,
+		topTracks:  topTracks,
+	}
 }

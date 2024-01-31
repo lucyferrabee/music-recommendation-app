@@ -5,12 +5,45 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"sort"
 	"strings"
 
 	"github.com/zmb3/spotify"
 	"lucy.ferrabee.co.uk/auth"
 )
+
+func main() {
+	reader := bufio.NewReader(os.Stdin)
+
+	id, err := getInput("Input the id of the song and we'll generate a playlist for you: ", reader)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	auth := auth.NewAuthenticator("4779b9533e004287b6536fd8c5325adf", "8dbf0a481f8b4de0901fbc9661f6036c")
+
+	relatedArtistService := NewRelatedArtistService(auth)
+	playlistService := NewPlaylistService(relatedArtistService)
+
+	const targetPopularity = 70
+	const threshold = 10
+
+	playlistTracks, err := playlistService.GeneratePlaylist(id, targetPopularity, threshold)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Here's your playlist: ")
+
+	for _, track := range playlistTracks {
+		fmt.Printf("Name: %s, Artist: %s, Popularity: %d\n", track.Name, track.Artists[0].Name, track.Popularity)
+	}
+}
+
+type byPopularity []spotify.FullTrack
+
+func (a byPopularity) Len() int           { return len(a) }
+func (a byPopularity) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a byPopularity) Less(i, j int) bool { return a[i].Popularity > a[j].Popularity }
 
 func getInput(prompt string, r *bufio.Reader) (string, error) {
 	fmt.Print(prompt)
@@ -22,47 +55,9 @@ func getInput(prompt string, r *bufio.Reader) (string, error) {
 	return strings.TrimSpace(input), nil
 }
 
-func main() {
-	reader := bufio.NewReader(os.Stdin)
-
-	// get id of track
-	id, err := getInput("Input the id of the song and we'll generate a playlist for you: ", reader)
-	if err != nil {
-		log.Fatal(err)
+func abs(n int) int {
+	if n < 0 {
+		return -n
 	}
-
-	// get access
-	auth := auth.NewAuthenticator("4779b9533e004287b6536fd8c5325adf", "8dbf0a481f8b4de0901fbc9661f6036c")
-
-	artistService := NewArtistService(auth)
-	relatedArtistService := NewRelatedArtistService(auth)
-
-	// get artist of track
-	artist := artistService.getByTrackId(id)
-
-	// get all top tracks of artist's related artists
-	allTopTracks, err := relatedArtistService.getTopTracksFromRelatedArtists(artist.id, 1)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// sort by popularity
-	sort.Sort(byPopularity(allTopTracks))
-
-	// Print the sorted tracks
-	for _, track := range allTopTracks {
-		fmt.Printf("Name: %s, Popularity: %d\n", track.Name, track.Popularity)
-	}
-
-	fmt.Println("Here's your playlist: ")
-
-	// print the playlist
-	fmt.Println(displayPlaylist(allTopTracks))
+	return n
 }
-
-// byPopularity is a type that implements the sort.Interface for []spotify.FullTrack
-type byPopularity []spotify.FullTrack
-
-func (a byPopularity) Len() int           { return len(a) }
-func (a byPopularity) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a byPopularity) Less(i, j int) bool { return a[i].Popularity > a[j].Popularity }
