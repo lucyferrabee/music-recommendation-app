@@ -59,7 +59,7 @@ func (ras *RelatedArtistService) getTopTracksFromRelatedArtists(id string, depth
 	return topTracks, nil
 }
 
-func (ras *RelatedArtistService) getByTrackId(id string) relatedartist {
+func (ras *RelatedArtistService) getFirstRelatedArtistByTrackId(id string) relatedartist {
 	client := ras.Auth.Client
 
 	trackID := spotify.ID(id)

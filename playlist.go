@@ -17,7 +17,7 @@ func NewPlaylistService(relatedArtistService *RelatedArtistService) *PlaylistSer
 }
 
 func (ps *PlaylistService) GeneratePlaylist(trackID string, targetPopularity, threshold int) ([]spotify.FullTrack, error) {
-	artist := ps.RelatedArtistService.getByTrackId(trackID)
+	artist := ps.RelatedArtistService.getFirstRelatedArtistByTrackId(trackID)
 	allTopTracks, err := ps.RelatedArtistService.getTopTracksFromRelatedArtists(artist.id, 1)
 	if err != nil {
 		return nil, err
