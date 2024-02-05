@@ -25,7 +25,7 @@ func main() {
 	playlistService := NewPlaylistService(relatedArtistService)
 
 	const targetPopularity = 70
-	const threshold = 10
+	const threshold = 2
 
 	playlistTracks, err := playlistService.GeneratePlaylist(id, targetPopularity, threshold)
 	if err != nil {

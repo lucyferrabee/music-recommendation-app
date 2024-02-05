@@ -14,11 +14,18 @@ func TestChooseSimilarPopularity(t *testing.T) {
 		{Popularity: 81},
 		{Popularity: 75},
 		{Popularity: 65},
+		{Popularity: 40},
+		{Popularity: 60},
 	}
 
 	result := ps.chooseSimilarPopularity(tracks, 70, 10)
+	assert.Len(t, result, 3, "Expected 3 tracks")
 
-	assert.Len(t, result, 2, "Expected 2 tracks")
+	result2 := ps.chooseSimilarPopularity(tracks, 90, 9)
+	assert.Len(t, result2, 1, "Expected 1 track")
+
+	result3 := ps.chooseSimilarPopularity(tracks, 60, 6)
+	assert.Len(t, result3, 2, "Expected 2 tracks")
 
 	for _, track := range result {
 		assert.True(t, abs(track.Popularity-70) <= 10, "Track popularity should be within the threshold")
@@ -26,20 +33,32 @@ func TestChooseSimilarPopularity(t *testing.T) {
 }
 
 func TestRemoveDuplicates(t *testing.T) {
+	ps := &PlaylistService{}
+
 	tracks := []spotify.FullTrack{
-		{ID: spotify.ID("1")},
-		{ID: spotify.ID("2")},
-		{ID: spotify.ID("1")},
-		{ID: spotify.ID("3")},
+		{
+			SimpleTrack: spotify.SimpleTrack{ID: "1"},
+			Popularity:  80,
+		},
+		{
+			SimpleTrack: spotify.SimpleTrack{ID: "2"},
+			Popularity:  70,
+		},
+		{
+			SimpleTrack: spotify.SimpleTrack{ID: "3"},
+			Popularity:  70,
+		},
+		{
+			SimpleTrack: spotify.SimpleTrack{ID: "4"},
+			Popularity:  70,
+		},
 	}
 
-	// Call the function being tested
-	result := removeDuplicates(tracks)
+	result := ps.removeDuplicates(tracks)
 
-	// Assertions
-	assert.Len(t, result, 3, "Expected 3 unique tracks")
+	// Assert
+	assert.Len(t, result, 4, "Expected 4 unique tracks")
 
-	// Check if the result does not contain duplicates
 	uniqueIDs := make(map[spotify.ID]struct{})
 	for _, track := range result {
 		assert.NotContains(t, uniqueIDs, track.ID, "Duplicate track found")
@@ -47,13 +66,11 @@ func TestRemoveDuplicates(t *testing.T) {
 	}
 }
 
-// TestAbs tests the abs function
 func TestAbs(t *testing.T) {
-	// Call the function being tested with positive and negative values
 	result1 := abs(5)
 	result2 := abs(-5)
 
-	// Assertions
+	// Assert
 	assert.Equal(t, 5, result1, "Absolute value of 5 should be 5")
 	assert.Equal(t, 5, result2, "Absolute value of -5 should be 5")
 }
