@@ -40,7 +40,6 @@ func (s *RelatedArtistServiceTest) getFirstRelatedArtistByTrackId(id string) []r
 	return artists
 }
 
-// your test function
 func TestGetTopTracksFromRelatedArtists(t *testing.T) {
 	mockClient := new(MockSpotifyClient)
 
@@ -48,7 +47,6 @@ func TestGetTopTracksFromRelatedArtists(t *testing.T) {
 		Client: mockClient,
 	}
 
-	// Set up expected data for testing
 	expectedRelatedArtists := []spotify.FullArtist{
 		{ID: "related-artist-1", Name: "Related Artist 1"},
 		{ID: "related-artist-2", Name: "Related Artist 2"},
