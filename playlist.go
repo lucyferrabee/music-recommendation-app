@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"sort"
 
 	"github.com/zmb3/spotify"
@@ -35,7 +36,7 @@ func (ps *PlaylistService) chooseSimilarPopularity(tracks []spotify.FullTrack, t
 	var selectedTracks []spotify.FullTrack
 
 	for _, track := range tracks {
-		if abs(track.Popularity-targetPopularity) <= threshold {
+		if math.Abs(float64(track.Popularity)-float64(targetPopularity)) <= float64(threshold) {
 			selectedTracks = append(selectedTracks, track)
 		}
 	}
@@ -56,3 +57,9 @@ func (ps *PlaylistService) removeDuplicates(tracks []spotify.FullTrack) []spotif
 
 	return uniqueTracks
 }
+
+type byPopularity []spotify.FullTrack
+
+func (a byPopularity) Len() int           { return len(a) }
+func (a byPopularity) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a byPopularity) Less(i, j int) bool { return a[i].Popularity < a[j].Popularity }

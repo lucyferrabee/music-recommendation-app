@@ -4,7 +4,6 @@ import (
 	"log"
 
 	"github.com/zmb3/spotify"
-	"lucy.ferrabee.co.uk/auth"
 )
 
 type relatedartist struct {
@@ -15,17 +14,17 @@ type relatedartist struct {
 }
 
 type RelatedArtistService struct {
-	Auth *auth.Authenticator
+	Client spotify.Client // Use spotify.Client directly
 }
 
-func NewRelatedArtistService(auth *auth.Authenticator) *RelatedArtistService {
+func NewRelatedArtistService(client spotify.Client) *RelatedArtistService {
 	return &RelatedArtistService{
-		Auth: auth,
+		Client: client,
 	}
 }
 
 func (ras *RelatedArtistService) getTopTracksFromRelatedArtists(id string, depth int) ([]spotify.FullTrack, error) {
-	client := ras.Auth.Client
+	client := ras.Client
 
 	topTracks, err := client.GetArtistsTopTracks(spotify.ID(id), "US")
 	if err != nil {
@@ -60,7 +59,7 @@ func (ras *RelatedArtistService) getTopTracksFromRelatedArtists(id string, depth
 }
 
 func (ras *RelatedArtistService) getFirstRelatedArtistByTrackId(id string) relatedartist {
-	client := ras.Auth.Client
+	client := ras.Client
 
 	trackID := spotify.ID(id)
 

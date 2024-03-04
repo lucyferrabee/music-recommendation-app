@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -28,11 +29,49 @@ func TestChooseSimilarPopularity(t *testing.T) {
 	assert.Len(t, result3, 2, "Expected 2 tracks")
 
 	for _, track := range result {
-		assert.True(t, abs(track.Popularity-70) <= 10, "Track popularity should be within the threshold")
+		assert.True(t, math.Abs(float64(track.Popularity)-70) <= 10, "Track popularity should be within the threshold")
 	}
 }
 
-func TestRemoveDuplicates(t *testing.T) {
+func TestRemoveDuplicatesRemovesDuplicateWhenOneExists(t *testing.T) {
+	ps := &PlaylistService{}
+
+	tracks := []spotify.FullTrack{
+		{
+			SimpleTrack: spotify.SimpleTrack{ID: "1"},
+			Popularity:  80,
+		},
+		{
+			SimpleTrack: spotify.SimpleTrack{ID: "2"},
+			Popularity:  70,
+		},
+		{
+			SimpleTrack: spotify.SimpleTrack{ID: "3"},
+			Popularity:  70,
+		},
+		{
+			SimpleTrack: spotify.SimpleTrack{ID: "4"},
+			Popularity:  70,
+		},
+		{
+			SimpleTrack: spotify.SimpleTrack{ID: "4"},
+			Popularity:  70,
+		},
+	}
+
+	result := ps.removeDuplicates(tracks)
+
+	// Assert
+	assert.Len(t, result, 4, "Expected 4 unique tracks")
+
+	uniqueIDs := make(map[spotify.ID]struct{})
+	for _, track := range result {
+		assert.NotContains(t, uniqueIDs, track.ID, "Duplicate track found")
+		uniqueIDs[track.ID] = struct{}{}
+	}
+}
+
+func TestRemoveDuplicatesReturnsUniqueTracksWhenAllTracksAreUnique(t *testing.T) {
 	ps := &PlaylistService{}
 
 	tracks := []spotify.FullTrack{
@@ -58,19 +97,4 @@ func TestRemoveDuplicates(t *testing.T) {
 
 	// Assert
 	assert.Len(t, result, 4, "Expected 4 unique tracks")
-
-	uniqueIDs := make(map[spotify.ID]struct{})
-	for _, track := range result {
-		assert.NotContains(t, uniqueIDs, track.ID, "Duplicate track found")
-		uniqueIDs[track.ID] = struct{}{}
-	}
-}
-
-func TestAbs(t *testing.T) {
-	result1 := abs(5)
-	result2 := abs(-5)
-
-	// Assert
-	assert.Equal(t, 5, result1, "Absolute value of 5 should be 5")
-	assert.Equal(t, 5, result2, "Absolute value of -5 should be 5")
 }

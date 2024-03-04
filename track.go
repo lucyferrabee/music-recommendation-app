@@ -1,15 +1,13 @@
 package main
 
-import (
-	"lucy.ferrabee.co.uk/auth"
-)
+import "github.com/zmb3/spotify"
 
 type TrackService struct {
-	Auth *auth.Authenticator
+	Client spotify.Client // Use spotify.Client directly
 }
 
-func NewTrackService(auth *auth.Authenticator) *TrackService {
+func NewTrackService(client spotify.Client) *TrackService {
 	return &TrackService{
-		Auth: auth,
+		Client: client,
 	}
 }

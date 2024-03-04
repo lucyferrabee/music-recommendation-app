@@ -1,15 +1,13 @@
 package main
 
-import (
-	"lucy.ferrabee.co.uk/auth"
-)
+import "github.com/zmb3/spotify"
 
 type ArtistService struct {
-	Auth *auth.Authenticator
+	Client spotify.Client
 }
 
-func NewArtistService(auth *auth.Authenticator) *ArtistService {
+func NewArtistService(client spotify.Client) *ArtistService {
 	return &ArtistService{
-		Auth: auth,
+		Client: client,
 	}
 }

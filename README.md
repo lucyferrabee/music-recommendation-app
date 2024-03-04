@@ -4,6 +4,8 @@ to run the program, run these command in the terminal:
 
 ```$ go mod download```
 
+add env vars for target popularity and threshold:
+
 ```$ go build```
 
 ```$ ./lucy.ferrabee.co.uk```
