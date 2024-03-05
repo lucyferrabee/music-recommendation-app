@@ -35,8 +35,12 @@ func (ps *PlaylistService) GeneratePlaylist(trackID string, targetPopularity, th
 func (ps *PlaylistService) chooseSimilarPopularity(tracks []spotify.FullTrack, targetPopularity, threshold int) []spotify.FullTrack {
 	var selectedTracks []spotify.FullTrack
 
+	if len(tracks) == 0 {
+		return selectedTracks
+	}
+
 	for _, track := range tracks {
-		if math.Abs(float64(track.Popularity)-float64(targetPopularity)) <= float64(threshold) {
+		if math.Abs(float64(track.Popularity)-float64(targetPopularity)) <= math.Abs(float64(threshold)) {
 			selectedTracks = append(selectedTracks, track)
 		}
 	}

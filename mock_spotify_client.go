@@ -1,15 +1,17 @@
 package main
 
-import "github.com/zmb3/spotify"
+import (
+	"github.com/zmb3/spotify"
+)
 
 type SpotifyClient interface {
 	GetArtistsTopTracks(artistID spotify.ID, country string) ([]spotify.FullTrack, error)
-	GetRelatedArtists(artistID spotify.ID) ([]spotify.SimpleArtist, error)
+	GetRelatedArtists(artistID spotify.ID) ([]spotify.FullArtist, error)
 }
 
 type MockSpotifyClient struct {
 	TopTracks      []spotify.FullTrack
-	RelatedArtists []spotify.SimpleArtist
+	RelatedArtists []spotify.FullArtist
 }
 
 func NewMockSpotifyClient() SpotifyClient {
@@ -20,6 +22,6 @@ func (m *MockSpotifyClient) GetArtistsTopTracks(artistID spotify.ID, country str
 	return m.TopTracks, nil
 }
 
-func (m *MockSpotifyClient) GetRelatedArtists(artistID spotify.ID) ([]spotify.SimpleArtist, error) {
+func (m *MockSpotifyClient) GetRelatedArtists(artistID spotify.ID) ([]spotify.FullArtist, error) {
 	return m.RelatedArtists, nil
 }

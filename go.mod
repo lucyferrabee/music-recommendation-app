@@ -3,7 +3,7 @@ module lucy.ferrabee.co.uk
 go 1.21.1
 
 require (
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	github.com/zmb3/spotify v1.3.0
 	golang.org/x/oauth2 v0.15.0
 )
