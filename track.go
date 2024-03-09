@@ -1,40 +1,13 @@
 package main
 
-import (
-	"log"
-
-	"github.com/zmb3/spotify"
-	"lucy.ferrabee.co.uk/auth"
-)
-
-type track struct {
-	id         string
-	name       string
-	popularity int
-}
+import "github.com/zmb3/spotify"
 
 type TrackService struct {
-	Auth *auth.Authenticator
+	Client spotify.Client // Use spotify.Client directly
 }
 
-func NewTrackService(auth *auth.Authenticator) *TrackService {
+func NewTrackService(client spotify.Client) *TrackService {
 	return &TrackService{
-		Auth: auth,
-	}
-}
-
-func (ts *TrackService) getById(id string) track {
-	client := ts.Auth.Client
-
-	trackID := spotify.ID(id)
-	spotifyTrack, err := client.GetTrack(trackID)
-	if err != nil {
-		log.Fatalf("error retrieving track data: %v", err)
-	}
-
-	return track{
-		name:       spotifyTrack.Name,
-		id:         string(spotifyTrack.ID),
-		popularity: spotifyTrack.Popularity,
+		Client: client,
 	}
 }
